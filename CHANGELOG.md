@@ -5,7 +5,15 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.1] - 2026-11-08
+
+Initial public preview, released before the package was declared stable. The code is
+identical to 1.0.0; use 1.0.0 or newer.
+
 ## [1.0.0] - 2026-11-08
+
+First stable release. The public configuration keys, route name, log channel name,
+and beacon payload format are now a backward-compatible contract.
 
 ### Added
 
