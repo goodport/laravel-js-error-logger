@@ -44,6 +44,8 @@ return [
             'was aborted',
             'aborted without reason',
         ],
+        // Route names or `*` patterns; the beacon is not rendered on matching routes.
+        'routes' => [],
     ],
 
     'capture' => [

@@ -10,6 +10,7 @@ use Goodport\JsErrorLogger\Services\ReportError;
 use Goodport\JsErrorLogger\Support\ErrorFingerprint;
 use Goodport\JsErrorLogger\Support\IgnoreList;
 use Goodport\JsErrorLogger\Support\LogSanitizer;
+use Goodport\JsErrorLogger\Support\RouteExclusions;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Contracts\Cache\Factory as CacheFactory;
 use Illuminate\Contracts\Foundation\Application;
@@ -43,6 +44,10 @@ class JsErrorLoggerServiceProvider extends ServiceProvider
             }
 
             return ReportingSettings::fromConfig($config, $this->defaults());
+        });
+
+        $this->app->bind(RouteExclusions::class, function (Application $app): RouteExclusions {
+            return new RouteExclusions($app->make(ReportingSettings::class)->ignoredRoutes());
         });
 
         $this->app->singleton(ReportError::class, function (Application $app): ReportError {

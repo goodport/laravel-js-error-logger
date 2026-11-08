@@ -4,8 +4,10 @@ namespace Goodport\JsErrorLogger\View\Components;
 
 use Closure;
 use Goodport\JsErrorLogger\Config\ReportingSettings;
+use Goodport\JsErrorLogger\Support\RouteExclusions;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Vite;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Vite as ViteFacade;
 use Illuminate\View\Component;
 
@@ -13,15 +15,21 @@ final class Beacon extends Component
 {
     public function __construct(
         private ReportingSettings $settings,
+        private RouteExclusions $exclusions,
+        private Request $request,
         private ?string $nonce = null,
     ) {}
 
     /**
-     * Renders the inline beacon when reporting is enabled.
+     * Renders the inline beacon when reporting is enabled and the current route is not excluded.
      */
     public function render(): View|Closure|string
     {
         if (! $this->settings->enabled()) {
+            return '';
+        }
+
+        if ($this->exclusions->matches($this->request->route()?->getName())) {
             return '';
         }
 

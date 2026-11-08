@@ -23,6 +23,7 @@ final class ConfigurationTest extends TestCase
         $this->assertSame(300, config('js-error-logger.limits.max_message_length'));
         $this->assertFalse(config('js-error-logger.privacy.include_ip'));
         $this->assertTrue(config('js-error-logger.privacy.strip_query_strings'));
+        $this->assertSame([], config('js-error-logger.ignore.routes'));
         $this->assertSame('/custom-report', parse_url(route('js-error-logger.report'), PHP_URL_PATH));
     }
 
@@ -123,6 +124,7 @@ final class ConfigurationTest extends TestCase
             'session middleware' => [['route' => ['middleware' => ['session']]]],
             'auth middleware' => [['route' => ['middleware' => ['auth']]]],
             'auth guard middleware' => [['route' => ['middleware' => ['auth:api']]]],
+            'non-string ignored route' => [['ignore' => ['routes' => [123]]]],
         ];
     }
 

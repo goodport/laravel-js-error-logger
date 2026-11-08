@@ -42,7 +42,8 @@ are captured:
 </head>
 ```
 
-The component renders only when `enabled` is `true`.
+The component renders only when `enabled` is `true` and the current route is not
+excluded (see [Route exclusions](#route-exclusions)).
 
 When the application uses a Content-Security-Policy, pass a per-response nonce:
 
@@ -116,6 +117,7 @@ return [
             'was aborted',
             'aborted without reason',
         ],
+        'routes' => [],
     ],
 
     'capture' => [
@@ -145,6 +147,7 @@ return [
 | `privacy.include_user_agent` | `true` | Adds the User-Agent to the log context. |
 | `ignore.user_agents` | bot list | Case-insensitive User-Agent fragments that are ignored. |
 | `ignore.messages` | abort list | Case-insensitive message fragments that are ignored. |
+| `ignore.routes` | `[]` | Route names or `*` patterns where the beacon is not rendered. |
 | `capture.resource_errors` | `true` | Captures failed script and stylesheet loads. |
 | `capture.preload_errors` | `true` | Captures `vite:preloadError` events. |
 
@@ -157,9 +160,28 @@ Invalid configuration fails fast with
 route paths and names, empty log channels, non-positive numeric limits, and
 `web`, `session`, `auth`, or `auth:*` route middleware.
 
+### Route exclusions
+
+Add route names or `*` patterns to `ignore.routes` to skip rendering the beacon on
+those pages. Matching runs at render time against the current named route, so it
+uses the route name the application actually resolved. Patterns follow the
+`Str::is()` wildcard syntax and are case-sensitive.
+
+```php
+'ignore' => [
+    'routes' => ['checkout.*', 'account.settings'],
+],
+```
+
+Unnamed routes and error pages such as `404` have no route name and cannot be
+excluded this way. In SPA and Inertia applications, client-side navigations do not
+re-render the Blade component, so `ignore.routes` only applies to the route of the
+initial full-page load.
+
 ## How it works
 
-1. The Blade component renders an inline ES5 beacon. The endpoint comes from the
+1. The Blade component renders an inline ES5 beacon unless reporting is disabled or
+   the current named route matches `ignore.routes`. The endpoint comes from the
    named route and the client limits come from the package configuration.
 2. The beacon posts a JSON `Blob` with `{url, message, file, line}`.
 3. The endpoint runs `js-error-logger.enabled`, then the named rate limiter, then

@@ -20,6 +20,11 @@ use Orchestra\Testbench\TestCase as Orchestra;
 
 abstract class TestCase extends Orchestra
 {
+    /**
+     * Path of the route without a name used by the beacon exclusion tests.
+     */
+    protected const UNNAMED_BEACON_PATH = '/beacon/unnamed';
+
     protected bool $definePackageLogChannel = true;
 
     protected function setUp(): void
@@ -81,6 +86,18 @@ abstract class TestCase extends Orchestra
                 'nonce' => $request->query('nonce'),
             ]);
         })->name('tests.beacon.nonce');
+
+        $router->get('/excluded', static function (): string {
+            return Blade::render('<x-js-error-logger::beacon />');
+        })->name('tests.excluded');
+
+        $router->get('/shown', static function (): string {
+            return Blade::render('<x-js-error-logger::beacon />');
+        })->name('tests.shown');
+
+        $router->get(self::UNNAMED_BEACON_PATH, static function (): string {
+            return Blade::render('<x-js-error-logger::beacon />');
+        });
     }
 
     /**

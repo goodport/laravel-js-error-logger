@@ -22,7 +22,8 @@ automatic log channel registration.
 - `config/js-error-logger.php` — publishable package configuration.
 - `routes/web.php` — stateless POST report route built from `ReportingSettings`.
 - `src/Config/ReportingSettings.php` — recursive config merge, route path
-  normalization, typed accessors, and configuration validation.
+  normalization, ignored-route parsing, typed accessors, and configuration
+  validation.
 - `src/Config/InvalidConfigurationException.php` — invalid or missing configuration
   value with the key and the given value.
 - `src/Http/Middleware/EnsureReportingEnabled.php` — early `204` when disabled,
@@ -39,9 +40,12 @@ automatic log channel registration.
   matching.
 - `src/Support/LogSanitizer.php` — control character removal, multibyte-safe
   truncation, and query/fragment stripping.
+- `src/Support/RouteExclusions.php` — case-sensitive route-name matching with `*`
+  wildcard patterns for beacon rendering.
 - `src/Logging/ChannelRegistrar.php` — creates the JSON daily log channel when the
   application has not declared it.
-- `src/View/Components/Beacon.php` — enabled check and nonce resolution.
+- `src/View/Components/Beacon.php` — enabled check, route exclusion check, request
+  route resolution, and nonce resolution.
 - `resources/views/components/beacon.blade.php` — inline ES5 client beacon.
 - `tests/TestCase.php` — Testbench setup, test routes, beacon request helper, log
   record helpers, and package config overrides.
@@ -49,14 +53,17 @@ automatic log channel registration.
 - `tests/Support/FailingLogger.php` — PSR-3 logger that throws on every level.
 - `tests/Support/FailingOnceLogger.php` — Monolog logger that throws on the first
   write and then records later writes.
-- `tests/Unit/Support/` — `ErrorFingerprint`, `IgnoreList`, and `LogSanitizer` tests.
-- `tests/Feature/` — HTTP report, beacon, configuration, and log channel tests.
+- `tests/Unit/Support/` — `ErrorFingerprint`, `IgnoreList`, `LogSanitizer`, and
+  `RouteExclusions` tests.
+- `tests/Feature/` — HTTP report, beacon, route exclusion, configuration, and log
+  channel tests.
 
 ## Data Flow
 
 1. `<x-js-error-logger::beacon />` renders an inline ES5 IIFE when reporting is
-   enabled. The endpoint comes from `route(route.name)`; limits come from the
-   configuration through `@json`.
+   enabled and the current named route does not match `ignore.routes`. The route
+   name comes from the current request at render time. The endpoint comes from
+   `route(route.name)`; limits come from the configuration through `@json`.
 2. The browser posts a JSON `Blob` with `{url, message, file, line}` using
    `navigator.sendBeacon`.
 3. The route middleware order is `js-error-logger.enabled`, `throttle:js-error-logger`,
@@ -98,6 +105,10 @@ automatic log channel registration.
   truncation is multibyte-safe.
 - The nonce comes from the component attribute first, then from `Vite::cspNonce()`,
   then it is omitted.
+- Route-name exclusions are evaluated at render time from the current request, so
+  the frozen report payload never carries a route name. Unnamed routes and 404s
+  cannot be excluded, and SPA client-side navigations keep the beacon state from
+  the initial full-page load.
 
 ## Commands
 
@@ -116,7 +127,8 @@ vendor/bin/pint --test
   application/json` header to match `sendBeacon`.
 - Package routes are built with `route('js-error-logger.report')`; paths are never
   hardcoded.
-- Test routes are named `tests.beacon` and `tests.beacon.nonce`.
+- Test routes are named `tests.beacon`, `tests.beacon.nonce`, `tests.excluded`, and
+  `tests.shown`; one beacon route is deliberately unnamed.
 - The package log channel and the default log channel use Monolog `TestHandler`.
 - `FailingCacheStore`, `FailingLogger`, and `FailingOnceLogger` cover failure
   isolation.

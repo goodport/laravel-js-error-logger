@@ -17,6 +17,7 @@ final class ReportingSettings
      * @param  list<string>  $routeMiddleware
      * @param  list<string>  $ignoredUserAgents
      * @param  list<string>  $ignoredMessages
+     * @param  list<string>  $ignoredRoutes
      */
     private function __construct(
         private bool $enabled,
@@ -37,6 +38,7 @@ final class ReportingSettings
         private bool $includeUserAgent,
         private array $ignoredUserAgents,
         private array $ignoredMessages,
+        private array $ignoredRoutes,
         private bool $captureResourceErrors,
         private bool $capturePreloadErrors,
     ) {}
@@ -81,6 +83,7 @@ final class ReportingSettings
             includeUserAgent: self::booleanValue($merged, 'privacy.include_user_agent'),
             ignoredUserAgents: self::stringListValue($merged, 'ignore.user_agents'),
             ignoredMessages: self::stringListValue($merged, 'ignore.messages'),
+            ignoredRoutes: self::stringListValue($merged, 'ignore.routes'),
             captureResourceErrors: self::booleanValue($merged, 'capture.resource_errors'),
             capturePreloadErrors: self::booleanValue($merged, 'capture.preload_errors'),
         );
@@ -183,6 +186,14 @@ final class ReportingSettings
     public function ignoredMessages(): array
     {
         return $this->ignoredMessages;
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function ignoredRoutes(): array
+    {
+        return $this->ignoredRoutes;
     }
 
     public function captureResourceErrors(): bool
