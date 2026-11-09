@@ -5,6 +5,19 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2026-11-09
+
+### Changed
+
+- **Breaking:** the package now requires PHP 8.2+ and Laravel 12.69+. PHP 8.1,
+  Laravel 10, and Laravel 11 are no longer supported. Composer blocks those Laravel
+  releases because of active security advisories, so they cannot be installed or
+  tested with current Composer versions.
+
+### Removed
+
+- CI coverage for PHP 8.1, Laravel 10, and Laravel 11.
+
 ## [1.1.0] - 2026-11-09
 
 ### Added

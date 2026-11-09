@@ -19,8 +19,9 @@ build step and does not depend on application bundles.
 
 ## Requirements
 
-- PHP 8.1 or newer.
-- Laravel 10, 11, or 12.
+- PHP 8.2 or newer.
+- Laravel 12.69 or newer. Composer blocks older Laravel releases because of active
+  security advisories.
 - The `mbstring` PHP extension.
 - A browser with `navigator.sendBeacon`. Older browsers silently skip reporting.
 

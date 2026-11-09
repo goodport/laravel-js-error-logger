@@ -9,8 +9,8 @@ automatic log channel registration.
 
 ## Stack
 
-- PHP 8.1+
-- Laravel 10, 11, and 12
+- PHP 8.2+
+- Laravel 12.69+
 - Testing: Orchestra Testbench, PHPUnit
 - Formatting: Laravel Pint
 
